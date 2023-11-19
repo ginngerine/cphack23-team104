@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS Infrastructure for a data processing application with DMS, Glue, SageMaker, Lambda, and API Gateway
+
+Resources:
+
+  # Define the DMS replication instance
+  MyDMSInstance:
+    Type: AWS::DMS::ReplicationInstance
+    Properties:
+      ReplicationInstanceClass: dms.t2.micro
+      AllocatedStorage: 50
+      PubliclyAccessible: true
+      EngineVersion: '3.4.4'
+      # Other necessary properties...
+
+  # Define the AWS Glue Job
+  MyGlueJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: 'glueetl'
+        ScriptLocation: 's3://my-glue-scripts-bucket/my-transform-script.py'
+      Role: !GetAtt GlueServiceRole.Arn
+      # Other necessary properties...
+
+  # Define the SageMaker Training Job (Simplified example)
+  MySageMakerModel:
+    Type: AWS::SageMaker::Model
+    Properties:
+      ExecutionRoleArn: !GetAtt SageMakerExecutionRole.Arn
+      PrimaryContainer:
+        Image: '123456789012.dkr.ecr.us-west-2.amazonaws.com/my-custom-image:latest'
+        ModelDataUrl: 's3://my-model-data-bucket/'
+      # Other necessary properties...
+
+  # Define the Lambda function for the API Gateway
+  MyLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: 'index.handler'
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: 'my-lambda-functions-bucket'
+        S3Key: 'my-lambda-function.zip'
+      Runtime: 'python3.8'
+      # Other necessary properties...
+
+  # Define the API Gateway
+  MyApiGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: 'MyApiGateway'
+      Description: 'API Gateway for my application'
+      # Other necessary properties...
+
+  # Define IAM Roles
+  GlueServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      # IAM role properties...
+
+  SageMakerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      # IAM role properties...
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      # IAM role properties...
+
+Outputs:
+  SageMakerModelArn:
+    Description: "The ARN of the SageMaker Model"
+    Value: !GetAtt MySageMakerModel.Arn
+
+  LambdaFunctionArn:
+    Description: "The ARN of the Lambda Function"
+    Value: !GetAtt MyLambdaFunction.Arn
+
+  ApiGatewayUrl:
+    Description: "The URL of the API Gateway"
+    Value: !Sub 'https://${MyApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod'
+
