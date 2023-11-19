@@ -1,0 +1,27 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    padding: 20px;
+    background-color: #f8f8f8;
+}
+
+#app {
+    margin: auto;
+    width: 50%;
+    border: 1px solid #dcdcdc;
+    padding: 20px;
+    background-color: #ffffff;
+    text-align: center;
+}
+
+button {
+    background-color: #008cba;
+    color: white;
+    padding: 12px 24px;
+    margin: 10px 0;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #005f6b;
+}
